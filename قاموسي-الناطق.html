@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>قاموسي الناطق 🌟</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Noto+Kufi+Arabic:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF8ED;
+    --cream-2:#FFEFD9;
+    --ink:#2D2A3E;
+    --orange:#FF6B4A;
+    --orange-dark:#E14F30;
+    --mint:#3EC1A7;
+    --mint-dark:#279E86;
+    --sun:#FFC93C;
+    --sun-dark:#E8A800;
+    --grape:#8B5FBF;
+    --grape-dark:#6E45A0;
+    --sky:#4FA3E0;
+    --sky-dark:#2E85C4;
+    --pink:#FF8FB1;
+    --pink-dark:#E85D89;
+    --card-bg:#FFFFFF;
+    --shadow: 0 8px 24px rgba(45,42,62,.10);
+    --shadow-lg: 0 16px 40px rgba(45,42,62,.18);
+    --radius: 24px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Tajawal',sans-serif;
+    background:
+      radial-gradient(circle at 8% 12%, rgba(255,201,60,.25), transparent 40%),
+      radial-gradient(circle at 92% 18%, rgba(79,163,224,.20), transparent 42%),
+      radial-gradient(circle at 50% 95%, rgba(139,95,191,.15), transparent 45%),
+      var(--cream);
+    color:var(--ink);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .kufi{ font-family:'Noto Kufi Arabic', sans-serif; }
+
+  /* decorative floating shapes */
+  .bg-shape{
+    position:fixed; border-radius:50%; opacity:.35; pointer-events:none; z-index:0;
+    filter:blur(2px);
+    animation:float 9s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-18px) rotate(8deg); }
+  }
+
+  header{
+    position:relative; z-index:2;
+    text-align:center;
+    padding:38px 16px 18px;
+  }
+  header .emoji-row{ font-size:34px; margin-bottom:6px; letter-spacing:8px; }
+  header h1{
+    font-family:'Noto Kufi Arabic',sans-serif;
+    font-weight:900;
+    font-size:clamp(28px, 6vw, 46px);
+    margin:0;
+    background:linear-gradient(90deg, var(--orange), var(--grape) 55%, var(--sky));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  header p{
+    margin:8px 0 0;
+    font-size:clamp(14px,2.6vw,18px);
+    color:#5B5770;
+    font-weight:500;
+  }
+
+  /* tabs */
+  .tabs-wrap{
+    position:sticky; top:0; z-index:10;
+    background:linear-gradient(180deg, var(--cream) 70%, rgba(255,248,237,0));
+    padding:14px 0 20px;
+  }
+  .tabs{
+    display:flex; gap:10px; overflow-x:auto;
+    padding:6px 16px 10px;
+    scrollbar-width:none;
+    justify-content:flex-start;
+  }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab-btn{
+    flex:0 0 auto;
+    display:flex; align-items:center; gap:8px;
+    padding:10px 18px;
+    border-radius:999px;
+    border:2px solid transparent;
+    background:#fff;
+    box-shadow:var(--shadow);
+    font-family:'Tajawal',sans-serif;
+    font-weight:700;
+    font-size:15px;
+    color:var(--ink);
+    cursor:pointer;
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+    white-space:nowrap;
+  }
+  .tab-btn .ic{ font-size:20px; }
+  .tab-btn:hover{ transform:translateY(-3px) scale(1.03); box-shadow:var(--shadow-lg); }
+  .tab-btn.active{
+    color:#fff;
+    border-color:transparent;
+    transform:translateY(-2px);
+    box-shadow:var(--shadow-lg);
+  }
+
+  main{ position:relative; z-index:2; max-width:1180px; margin:0 auto; padding:0 18px 60px; }
+
+  .topic-title{
+    display:flex; align-items:center; gap:12px;
+    margin:6px 4px 20px;
+  }
+  .topic-title .badge{
+    width:50px;height:50px; border-radius:16px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px;
+    box-shadow:var(--shadow);
+  }
+  .topic-title h2{
+    font-family:'Noto Kufi Arabic',sans-serif;
+    font-weight:800; font-size:clamp(20px,4vw,28px);
+    margin:0;
+  }
+  .topic-title span.count{
+    font-size:14px; color:#8A85A0; font-weight:600; margin-inline-start:4px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px,1fr));
+    gap:18px;
+  }
+
+  /* flip card */
+  .card{
+    perspective:1400px;
+    height:220px;
+    cursor:pointer;
+  }
+  .card-inner{
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d;
+    transition:transform .55s cubic-bezier(.2,.9,.3,1.15);
+    border-radius:var(--radius);
+  }
+  .card.flipped .card-inner{ transform:rotateY(180deg); }
+  .card:hover .card-inner{ box-shadow:var(--shadow-lg); }
+
+  .face{
+    position:absolute; inset:0;
+    border-radius:var(--radius);
+    backface-visibility:hidden;
+    display:flex; flex-direction:column;
+    padding:16px;
+    box-shadow:var(--shadow);
+    background:var(--card-bg);
+    overflow:hidden;
+  }
+  .face.front{
+    align-items:center; justify-content:center; text-align:center;
+    gap:8px;
+  }
+  .face.back{
+    transform:rotateY(180deg);
+    justify-content:space-between;
+  }
+
+  .front .icon{
+    font-size:52px;
+    filter:drop-shadow(0 4px 6px rgba(0,0,0,.12));
+    transition:transform .25s ease;
+  }
+  .card:hover .front .icon{ transform:scale(1.12) rotate(-4deg); }
+
+  .front .word{
+    font-family:'Noto Kufi Arabic',sans-serif;
+    font-weight:800;
+    font-size:23px;
+    line-height:1.5;
+  }
+  .front .hint{
+    font-size:12px; color:#9A96AC; font-weight:600;
+  }
+
+  .back .top-row{
+    display:flex; align-items:flex-start; justify-content:space-between;
+  }
+  .back .word-back{
+    font-family:'Noto Kufi Arabic',sans-serif;
+    font-weight:800; font-size:19px;
+  }
+  .back .icon-small{ font-size:24px; }
+  .back .example{
+    background:var(--cream-2);
+    border-radius:14px;
+    padding:10px 12px;
+    font-size:13.5px;
+    line-height:1.7;
+    color:#454158;
+    font-weight:500;
+    flex:1;
+    display:flex; align-items:center;
+  }
+  .back .example b{ color:var(--orange-dark); }
+
+  .speak-btn{
+    align-self:center;
+    display:flex; align-items:center; justify-content:center;
+    gap:6px;
+    width:100%;
+    border:none; border-radius:14px;
+    padding:9px 10px;
+    font-family:'Tajawal',sans-serif;
+    font-weight:700; font-size:14px;
+    color:#fff;
+    cursor:pointer;
+    transition:transform .15s ease, filter .15s ease;
+  }
+  .speak-btn:hover{ transform:scale(1.03); filter:brightness(1.08); }
+  .speak-btn:active{ transform:scale(.97); }
+  .speak-btn .bars{ display:inline-flex; align-items:flex-end; gap:2px; height:14px; }
+  .speak-btn .bars i{
+    display:block; width:3px; background:#fff; border-radius:2px; height:5px;
+    animation:none;
+  }
+  .speak-btn.playing .bars i{ animation:bar 0.8s ease-in-out infinite; }
+  .speak-btn .bars i:nth-child(1){ animation-delay:0s; }
+  .speak-btn .bars i:nth-child(2){ animation-delay:.15s; }
+  .speak-btn .bars i:nth-child(3){ animation-delay:.3s; }
+  .speak-btn .bars i:nth-child(4){ animation-delay:.45s; }
+  @keyframes bar{
+    0%,100%{ height:4px; }
+    50%{ height:14px; }
+  }
+
+  .flip-btn-front{
+    margin-top:2px;
+    font-size:11px;
+    color:#B7B2C6;
+    font-weight:600;
+  }
+
+  /* per-topic color themes via data-attr */
+  [data-theme="orange"] .badge{ background:linear-gradient(135deg, var(--orange), var(--orange-dark)); color:#fff; }
+  [data-theme="mint"] .badge{ background:linear-gradient(135deg, var(--mint), var(--mint-dark)); color:#fff; }
+  [data-theme="sun"] .badge{ background:linear-gradient(135deg, var(--sun), var(--sun-dark)); color:#fff; }
+  [data-theme="grape"] .badge{ background:linear-gradient(135deg, var(--grape), var(--grape-dark)); color:#fff; }
+  [data-theme="sky"] .badge{ background:linear-gradient(135deg, var(--sky), var(--sky-dark)); color:#fff; }
+  [data-theme="pink"] .badge{ background:linear-gradient(135deg, var(--pink), var(--pink-dark)); color:#fff; }
+
+  .tab-btn[data-theme="orange"].active{ background:linear-gradient(135deg, var(--orange), var(--orange-dark)); }
+  .tab-btn[data-theme="mint"].active{ background:linear-gradient(135deg, var(--mint), var(--mint-dark)); }
+  .tab-btn[data-theme="sun"].active{ background:linear-gradient(135deg, var(--sun), var(--sun-dark)); }
+  .tab-btn[data-theme="grape"].active{ background:linear-gradient(135deg, var(--grape), var(--grape-dark)); }
+  .tab-btn[data-theme="sky"].active{ background:linear-gradient(135deg, var(--sky), var(--sky-dark)); }
+  .tab-btn[data-theme="pink"].active{ background:linear-gradient(135deg, var(--pink), var(--pink-dark)); }
+
+  .speak-btn[data-theme="orange"]{ background:linear-gradient(135deg, var(--orange), var(--orange-dark)); }
+  .speak-btn[data-theme="mint"]{ background:linear-gradient(135deg, var(--mint), var(--mint-dark)); }
+  .speak-btn[data-theme="sun"]{ background:linear-gradient(135deg, var(--sun), var(--sun-dark)); }
+  .speak-btn[data-theme="grape"]{ background:linear-gradient(135deg, var(--grape), var(--grape-dark)); }
+  .speak-btn[data-theme="sky"]{ background:linear-gradient(135deg, var(--sky), var(--sky-dark)); }
+  .speak-btn[data-theme="pink"]{ background:linear-gradient(135deg, var(--pink), var(--pink-dark)); }
+
+  .topic-panel{ display:none; animation:fadeIn .35s ease; }
+  .topic-panel.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  footer{
+    text-align:center; padding:20px; color:#A6A1B8; font-size:13px; position:relative; z-index:2;
+  }
+
+  /* settings row: voice rate control */
+  .toolbar{
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    flex-wrap:wrap;
+    margin:0 0 6px;
+    padding:0 16px;
+    position:relative; z-index:2;
+  }
+  .search-box{
+    display:flex; align-items:center; gap:8px;
+    background:#fff; border-radius:999px; box-shadow:var(--shadow);
+    padding:9px 16px; width:min(360px,90vw);
+  }
+  .search-box input{
+    border:none; outline:none; background:transparent; font-family:'Tajawal',sans-serif;
+    font-size:15px; width:100%; color:var(--ink); font-weight:600;
+  }
+  .search-box input::placeholder{ color:#B7B2C6; font-weight:500; }
+  .search-box .ic{ font-size:18px; }
+
+  @media (max-width:520px){
+    .card{ height:200px; }
+    .front .icon{ font-size:44px; }
+    .front .word{ font-size:19px; }
+    .grid{ gap:14px; }
+  }
+
+  .no-results{
+    text-align:center; padding:50px 10px; color:#B0ABC2; font-weight:700; font-size:16px;
+  }
+
+  :focus-visible{ outline:3px solid var(--sky); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<div class="bg-shape" style="width:120px;height:120px; background:var(--sun); top:6%; right:4%; animation-delay:0s;"></div>
+<div class="bg-shape" style="width:80px;height:80px; background:var(--mint); top:60%; left:3%; animation-delay:2s;"></div>
+<div class="bg-shape" style="width:60px;height:60px; background:var(--pink); top:22%; left:12%; animation-delay:4s;"></div>
+<div class="bg-shape" style="width:100px;height:100px; background:var(--sky); bottom:6%; right:8%; animation-delay:1.5s;"></div>
+
+<header>
+  <div class="emoji-row">🍎 📚 🎨 🎵</div>
+  <h1 class="kufi">قاموسي الناطق</h1>
+  <p>اضغط على البطاقة لتسمع الكلمة وتتعلّم معناها!</p>
+</header>
+
+<div class="toolbar">
+  <div class="search-box">
+    <span class="ic">🔍</span>
+    <input type="text" id="searchInput" placeholder="ابحث عن كلمة...">
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs" id="tabsRow"></div>
+</div>
+
+<main id="mainContent"></main>
+
+<footer>صُنع بحب لأصدقائنا الصغار 💛 — استخدم زر النطق لسماع الكلمة بصوت واضح</footer>
+
+<script>
+/* ============ DATA ============ */
+const TOPICS = [
+  {
+    id: "food",
+    name: "الطعام والأكل",
+    icon: "🍽️",
+    theme: "orange",
+    words: [
+      { ar:"لَذِيذَةٌ", icon:"😋", example:"هذه التُّفَّاحَةُ <b>لَذِيذَةٌ</b> جِدًّا." },
+      { ar:"غَيْرُ صِحِّيَّةٍ", icon:"🍭", example:"الحَلْوَى الكَثِيرَةُ <b>غَيْرُ صِحِّيَّةٍ</b>." },
+      { ar:"ضَارَّةٌ", icon:"⚠️", example:"الوَجَبَاتُ السَّرِيعَةُ قَدْ تَكُونُ <b>ضَارَّةً</b>." },
+      { ar:"حَقِيبَةُ الطَّعَامِ", icon:"🎒", example:"حَمَلْتُ <b>حَقِيبَةَ الطَّعَامِ</b> إِلَى المَدْرَسَةِ." },
+      { ar:"شَطِيرَةٌ", icon:"🥪", example:"أَكَلْتُ <b>شَطِيرَةَ</b> جُبْنٍ فِي الفُطُورِ." },
+      { ar:"الطَّعَامُ الصِّحِّيُّ", icon:"🥗", example:"أُحِبُّ <b>الطَّعَامَ الصِّحِّيَّ</b> مِثْلَ الخُضَارِ." },
+      { ar:"الخُبْزُ", icon:"🍞", example:"اشْتَرَتْ أُمِّي <b>الخُبْزَ</b> الطَّازَجَ." },
+      { ar:"الفُطُورُ", icon:"🌅", example:"أَتَنَاوَلُ <b>الفُطُورَ</b> فِي السَّاعَةِ السَّابِعَةِ." },
+      { ar:"الغَدَاءُ", icon:"🍛", example:"نَأْكُلُ <b>الغَدَاءَ</b> بَعْدَ المَدْرَسَةِ." },
+      { ar:"العَشَاءُ", icon:"🌙", example:"تَنَاوَلْنَا <b>العَشَاءَ</b> مَعًا فِي المَسَاءِ." },
+      { ar:"يَتَنَاوَلُ", icon:"🍴", example:"الوَلَدُ <b>يَتَنَاوَلُ</b> طَعَامَهُ بِهُدُوءٍ." },
+      { ar:"سَلَطَةٌ", icon:"🥙", example:"حَضَّرَتْ أُمِّي <b>سَلَطَةً</b> طَازَجَةً." },
+      { ar:"حُبُوبٌ", icon:"🌾", example:"آكُلُ <b>الحُبُوبَ</b> مَعَ الحَلِيبِ صَبَاحًا." },
+      { ar:"جَوْعَانُ", icon:"😣", example:"أَنَا <b>جَوْعَانٌ</b>، أُرِيدُ أَنْ آكُلَ." },
+      { ar:"بَيْضٌ", icon:"🥚", example:"أُحِبُّ <b>البَيْضَ</b> المَسْلُوقَ." },
+      { ar:"قَهْوَةٌ", icon:"☕", example:"يَشْرَبُ أَبِي <b>القَهْوَةَ</b> كُلَّ صَبَاحٍ." },
+      { ar:"سَمَكٌ", icon:"🐟", example:"تَنَاوَلْنَا <b>السَّمَكَ</b> فِي العَشَاءِ." },
+      { ar:"لَحْمٌ", icon:"🍖", example:"طَبَخَتْ أُمِّي <b>اللَّحْمَ</b> لِلْغَدَاءِ." },
+      { ar:"يَشْتَرِي", icon:"🛒", example:"أَبِي <b>يَشْتَرِي</b> الفَوَاكِهَ مِنَ السُّوقِ." },
+      { ar:"عَصِيرٌ", icon:"🧃", example:"أُحِبُّ <b>عَصِيرَ</b> البُرْتُقَالِ." },
+      { ar:"زَيْتُونٌ", icon:"🫒", example:"يُوضَعُ <b>الزَّيْتُونُ</b> فِي السَّلَطَةِ." },
+      { ar:"مَطْعَمٌ", icon:"🍽️", example:"ذَهَبْنَا إِلَى <b>مَطْعَمٍ</b> جَمِيلٍ." },
+      { ar:"وَجْبَةٌ", icon:"🍲", example:"كَانَتِ <b>الوَجْبَةُ</b> شَهِيَّةً." },
+    ]
+  },
+  {
+    id: "routine",
+    name: "الرُّوتين اليومي",
+    icon: "⏰",
+    theme: "sky",
+    words: [
+      { ar:"يَسْتَيْقِظُ", icon:"⏰", example:"<b>يَسْتَيْقِظُ</b> أَخِي بَاكِرًا كُلَّ يَوْمٍ." },
+      { ar:"يَنَامُ", icon:"😴", example:"الطِّفْلُ <b>يَنَامُ</b> مُبَكِّرًا." },
+      { ar:"يَلْبَسُ", icon:"👕", example:"<b>يَلْبَسُ</b> مَلَابِسَهُ قَبْلَ المَدْرَسَةِ." },
+      { ar:"يُرَتِّبُ السَّرِيرَ", icon:"🛏️", example:"كُلَّ صَبَاحٍ <b>يُرَتِّبُ</b> غُرْفَتَهُ وَ<b>سَرِيرَهُ</b>." },
+      { ar:"يُطْعِمُ الكَلْبَ", icon:"🐶", example:"بَعْدَ الفُطُورِ <b>يُطْعِمُ</b> أَخِي <b>الكَلْبَ</b>." },
+      { ar:"يُنَظِّفُ", icon:"🧹", example:"<b>يُنَظِّفُ</b> الوَلَدُ غُرْفَتَهُ كُلَّ يَوْمٍ." },
+      { ar:"يَغْسِلُ", icon:"🧼", example:"<b>يَغْسِلُ</b> يَدَيْهِ قَبْلَ الأَكْلِ." },
+      { ar:"يَسْتَحِمُّ", icon:"🚿", example:"<b>أَسْتَحِمُّ</b> كُلَّ مَسَاءٍ قَبْلَ النَّوْمِ." },
+      { ar:"أَمْسِ", icon:"⬅️", example:"ذَهَبْنَا إِلَى الحَدِيقَةِ <b>أَمْسِ</b>." },
+      { ar:"غَدًا", icon:"➡️", example:"سَنُسَافِرُ <b>غَدًا</b> صَبَاحًا." },
+      { ar:"البِدَايَةُ", icon:"🏁", example:"هَذِهِ <b>بِدَايَةُ</b> يَوْمِي الجَدِيدِ." },
+      { ar:"النِّهَايَةُ", icon:"🔚", example:"وَصَلْنَا إِلَى <b>نِهَايَةِ</b> الدَّرْسِ." },
+      { ar:"قَائِمَةُ المَهَامِّ", icon:"📝", example:"كَتَبْتُ <b>قَائِمَةَ المَهَامِّ</b> لِلْيَوْمِ." },
+      { ar:"وَاجِبٌ", icon:"📓", example:"أُنْهِي <b>وَاجِبِي</b> قَبْلَ اللَّعِبِ." },
+      { ar:"أَعْمَالٌ مَنْزِلِيَّةٌ", icon:"🏠", example:"أُسَاعِدُ فِي <b>الأَعْمَالِ المَنْزِلِيَّةِ</b>." },
+    ]
+  },
+  {
+    id: "sport",
+    name: "الرِّياضة والتَّحدي",
+    icon: "🏆",
+    theme: "mint",
+    words: [
+      { ar:"سِبَاقٌ", icon:"🏁", example:"شَارَكْتُ فِي <b>سِبَاقِ</b> الجَرْيِ." },
+      { ar:"تَحَدٍّ", icon:"🎯", example:"هَذَا <b>تَحَدٍّ</b> مُمْتِعٌ لِي." },
+      { ar:"يُمَارِسُ", icon:"🏃", example:"<b>يُمَارِسُ</b> أَخِي الرِّيَاضَةَ يَوْمِيًّا." },
+      { ar:"يُشَارِكُ", icon:"🤝", example:"<b>يُشَارِكُ</b> الفَرِيقُ فِي المُبَارَاةِ." },
+      { ar:"يَتَّصِلُ", icon:"📞", example:"<b>يَتَّصِلُ</b> بِصَدِيقِهِ لِلَّعِبِ مَعًا." },
+      { ar:"يُشَجِّعُ", icon:"📣", example:"الجُمْهُورُ <b>يُشَجِّعُ</b> الفَرِيقَ." },
+      { ar:"أَفْضَلُ", icon:"🥇", example:"هَذَا الفَرِيقُ <b>أَفْضَلُ</b> مِنَ الآخَرِ." },
+    ]
+  },
+  {
+    id: "wishes",
+    name: "الرَّغبات والاهتمامات",
+    icon: "💭",
+    theme: "pink",
+    words: [
+      { ar:"أُرِيدُ أَنْ", icon:"🙋", example:"<b>أُرِيدُ أَنْ</b> أَلْعَبَ فِي الحَدِيقَةِ." },
+      { ar:"أُفَضِّلُ أَنْ", icon:"⭐", example:"<b>أُفَضِّلُ أَنْ</b> أَقْرَأَ قِصَّةً." },
+      { ar:"أُشَاهِدُ", icon:"📺", example:"<b>أُشَاهِدُ</b> بَرْنَامَجًا تَعْلِيمِيًّا." },
+      { ar:"يَزُورُ", icon:"🚪", example:"<b>يَزُورُ</b> جَدَّهُ كُلَّ أُسْبُوعٍ." },
+    ]
+  },
+  {
+    id: "hobbies",
+    name: "الهوايات والفنون",
+    icon: "🎨",
+    theme: "grape",
+    words: [
+      { ar:"مُمْتِعٌ", icon:"🎉", example:"الرَّسْمُ نَشَاطٌ <b>مُمْتِعٌ</b>." },
+      { ar:"جَمِيلٌ", icon:"🌸", example:"هَذَا اللَّوْحَةُ <b>جَمِيلَةٌ</b> جِدًّا." },
+      { ar:"سَرِيعٌ", icon:"⚡", example:"الأَرْنَبُ <b>سَرِيعٌ</b> فِي الجَرْيِ." },
+      { ar:"بَطِيءٌ", icon:"🐢", example:"السُّلَحْفَاةُ <b>بَطِيئَةٌ</b> جِدًّا." },
+      { ar:"النَّحْتُ", icon:"🗿", example:"يُحِبُّ الفَنَّانُ <b>النَّحْتَ</b> بِالحَجَرِ." },
+      { ar:"مَعْرِضٌ", icon:"🖼️", example:"زُرْنَا <b>مَعْرِضَ</b> الفَنِّ." },
+      { ar:"مَسْرَحٌ", icon:"🎭", example:"شَاهَدْنَا عَرْضًا فِي <b>المَسْرَحِ</b>." },
+      { ar:"الهِوَايَاتُ", icon:"🎨", example:"مِنْ <b>هِوَايَاتِي</b> الرَّسْمُ وَالقِرَاءَةُ." },
+      { ar:"القِرَاءَةُ", icon:"📖", example:"أُحِبُّ <b>القِرَاءَةَ</b> قَبْلَ النَّوْمِ." },
+      { ar:"الرَّقْصُ", icon:"💃", example:"تَتَعَلَّمُ أُخْتِي <b>الرَّقْصَ</b>." },
+      { ar:"الغِنَاءُ", icon:"🎤", example:"يُحِبُّ أَخِي <b>الغِنَاءَ</b> كَثِيرًا." },
+      { ar:"تِمْثَالٌ", icon:"🗽", example:"رَأَيْنَا <b>تِمْثَالًا</b> كَبِيرًا فِي السَّاحَةِ." },
+      { ar:"يَزْرَعُ", icon:"🌱", example:"الفَلَّاحُ <b>يَزْرَعُ</b> الأَشْجَارَ." },
+    ]
+  }
+];
+
+/* ============ RENDER ============ */
+const tabsRow = document.getElementById('tabsRow');
+const mainContent = document.getElementById('mainContent');
+let activeTopic = TOPICS[0].id;
+
+function buildTabs(){
+  tabsRow.innerHTML = TOPICS.map(t => `
+    <button class="tab-btn ${t.id===activeTopic?'active':''}" data-theme="${t.theme}" data-topic="${t.id}">
+      <span class="ic">${t.icon}</span> ${t.name}
+    </button>
+  `).join('');
+  tabsRow.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      activeTopic = btn.dataset.topic;
+      document.getElementById('searchInput').value = '';
+      buildTabs();
+      buildPanels();
+    });
+  });
+}
+
+function cardHTML(topic, w, idx){
+  const cardId = topic.id + '-' + idx;
+  return `
+  <div class="card" data-theme="${topic.theme}" id="card-${cardId}">
+    <div class="card-inner">
+      <div class="face front">
+        <div class="icon">${w.icon}</div>
+        <div class="word kufi">${w.ar}</div>
+        <div class="hint">اضغط لرؤية المثال ⤵</div>
+      </div>
+      <div class="face back">
+        <div class="top-row">
+          <div class="word-back kufi">${w.ar}</div>
+          <div class="icon-small">${w.icon}</div>
+        </div>
+        <div class="example">${w.example}</div>
+        <button class="speak-btn" data-theme="${topic.theme}" data-text="${w.ar.replace(/"/g,'&quot;')}" type="button">
+          <span class="bars"><i></i><i></i><i></i><i></i></span>
+          🔊 اسمع النطق
+        </button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function buildPanels(){
+  const query = document.getElementById('searchInput').value.trim();
+
+  mainContent.innerHTML = TOPICS.map(topic=>{
+    let words = topic.words.map((w,idx)=>({w, idx}));
+    if(query){
+      words = words.filter(({w}) => w.ar.includes(query));
+    }
+    const isActive = topic.id === activeTopic && !query;
+    const showBecauseSearch = query && words.length>0;
+    const visible = query ? showBecauseSearch : (topic.id===activeTopic);
+
+    if(!visible) return '';
+
+    const gridHTML = words.length
+      ? `<div class="grid">${words.map(({w,idx})=>cardHTML(topic,w,idx)).join('')}</div>`
+      : `<div class="no-results">لا توجد نتائج مطابقة 🔍</div>`;
+
+    return `
+    <section class="topic-panel active">
+      <div class="topic-title">
+        <div class="badge" data-theme="${topic.theme}">${topic.icon}</div>
+        <h2 class="kufi">${topic.name}</h2>
+        <span class="count">(${words.length} كلمة)</span>
+      </div>
+      ${gridHTML}
+    </section>`;
+  }).join('');
+
+  attachCardEvents();
+}
+
+function attachCardEvents(){
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('.speak-btn')) return;
+      card.classList.toggle('flipped');
+    });
+  });
+  document.querySelectorAll('.speak-btn').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      speak(btn.dataset.text, btn);
+    });
+  });
+}
+
+/* ============ SPEECH ============ */
+let arabicVoice = null;
+function pickVoice(){
+  const voices = window.speechSynthesis.getVoices();
+  arabicVoice =
+    voices.find(v => /ar-SA/i.test(v.lang) && /male|maged|majed/i.test(v.name)) ||
+    voices.find(v => /ar/i.test(v.lang) && /male/i.test(v.name)) ||
+    voices.find(v => /ar-SA/i.test(v.lang)) ||
+    voices.find(v => /^ar/i.test(v.lang)) ||
+    null;
+}
+if('speechSynthesis' in window){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+}
+
+function speak(text, btn){
+  if(!('speechSynthesis' in window)){
+    alert('عذرًا، متصفحك لا يدعم النطق الصوتي.');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'ar-SA';
+  utter.rate = 0.88;
+  utter.pitch = 1.05;
+  if(arabicVoice) utter.voice = arabicVoice;
+
+  document.querySelectorAll('.speak-btn.playing').forEach(b=>b.classList.remove('playing'));
+  btn.classList.add('playing');
+  utter.onend = ()=> btn.classList.remove('playing');
+  utter.onerror = ()=> btn.classList.remove('playing');
+
+  window.speechSynthesis.speak(utter);
+}
+
+/* ============ SEARCH ============ */
+document.getElementById('searchInput').addEventListener('input', buildPanels);
+
+/* ============ INIT ============ */
+buildTabs();
+buildPanels();
+</script>
+</body>
+</html>
